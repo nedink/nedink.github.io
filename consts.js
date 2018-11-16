@@ -1,3 +1,4 @@
 const GRAV = 0.1;
-const WIDTH = 600;
-const HEIGHT = 400;
+const WIDTH = 1000;
+const HEIGHT = 800;
+const PLEB_COUNT = 10;
