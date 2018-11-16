@@ -23,7 +23,8 @@ class Pleb {
       }
   
       // mutate
-      this.stop = Math.random() < 0.5 ? this.stop + Math.pow(Math.random(), 10) * 200 : Math.pow(Math.random(), 10) * -200;
+      const r = Math.pow(Math.random(), 10) * 100;
+      this.stop += Math.random() < 0.5 ? r : -r;
     }
   }
 
