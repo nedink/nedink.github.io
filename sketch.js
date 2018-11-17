@@ -1,11 +1,11 @@
 
 // pause
 let running;
-function mouseClicked() {
-  running = !running;
-  if (running)
-    doTimer();
-}
+// function mouseClicked() {
+//   running = !running;
+//   if (running)
+//     doTimer();
+// }
 
 // timer
 let timer = 0;
@@ -15,7 +15,7 @@ const doTimer = () => {
   setTimeout(() => {
     timer++;
     doTimer()
-  }, 1000);
+  }, TIME);
 }
 
 const gVecs = [];
@@ -26,6 +26,7 @@ for (i = 0; i < 6; i++) {
 const ground = new Ground(gVecs);
 
 const tx = 600;
+const ty = 300;
 
 const hVecs = [];
 // x = 0;
@@ -39,6 +40,13 @@ let plebs = [];
 for (i = 0; i < PLEB_COUNT; i++) {
   plebs.push(new Pleb(10 + Math.random() * 20, HEIGHT));
 }
+
+let iteration = 1;
+
+let prvAvg = 0;
+let avg = 0;
+
+const outcomes = [];
 
 
 /**
@@ -68,47 +76,50 @@ function draw() {
     return;
   
   // check time
-  if (timer > 10) {
+  if (timer >= (TIME / 100)) {
+    
     timer = 0;
+
+    // record outcomes
+    for (const pleb of plebs) {
+      outcomes.push(pleb.x);
+    }
+    // get updated avg
+    const sum = plebs.map(pleb => pleb.x).reduce((acc, cur) => acc + cur);
+    prvAvg = avg;
+    avg = sum / plebs.length;
+    
 
     /**
      * do next gen -----------------------------------------------------------
      */
-    // for pleb count
-    // - pick 2 plebs
-    //   - 
-    // - create new pleb
-    // 
     
     plebs.sort((a, b) => b.fitness - a.fitness);
-    // console.log(plebs);
-    
-    let plebCount = 0;
-    const r = Math.random();
     
     plebs.forEach((pleb, i) => {
-      pleb.r = Math.pow(0.5, 1 + i);
+      pleb.r = Math.pow(0.5, i);
     })
 
     newPlebs = [];
     while(newPlebs.length < PLEB_COUNT) {
-      
-      // choose p1
-      // choose p2
 
-      Math.sqrt(Math.pow(plebs.length, 2))
+      plebs.sort((a, b) => a.r - b.r);
       
-      // let p1, p2;
-      let p1 = plebs[0];
-      let p2 = plebs[1];
+      let p1, p2;
+      const r1 = Math.random(), r2 = Math.random();
       
-      // const r = Math.random();
-      // for (pleb of plebs) {
-      //   if (Math.random() < pleb.r) {
-      //     console.log(pleb);
-      //     break;
-      //   }
-      // }
+      for (const pleb of plebs) {
+        if (r1 < pleb.r) {
+          p1 = pleb;
+          break;
+        }
+      }
+      for (const pleb of plebs) {
+        if (r2 < pleb.r) {
+          p2 = pleb;
+          break;
+        }
+      }
       
       newPleb = new Pleb(10 + Math.random() * 20, HEIGHT, p1, p2);
 
@@ -116,6 +127,7 @@ function draw() {
     }
 
     plebs = newPlebs.slice();
+    iteration++;
   }
 
   // update plebs
@@ -128,10 +140,26 @@ function draw() {
    */
   background(0);
   
-  // draw time
+  // draw info
   fill(255);
   noStroke();
-  text(timer, 10, 20);
+  // iteration
+  text('Iteration: ' + iteration, 10, 20);
+  // time
+  text('Time left (sec): ' + ((TIME / 100) - timer), 10, 40);
+
+  // target
+  stroke(0, 180, 0);
+  line(tx, 0, tx, ty);
+  line(tx, ty, tx - 10, ty - 10);
+  line(tx, ty, tx + 10, ty - 10);
+  
+  // avg
+  stroke(255, 25500 * (1 / Math.abs(tx - avg)), 0);
+  line(avg, 0, avg, HEIGHT);
+  fill(255, 25500 * (1 / Math.abs(tx - avg)), 0);
+  noStroke();
+  text('Average', avg + 8, HEIGHT);
 
   // draw ground
   for (vec of ground.vecs) {
@@ -168,6 +196,7 @@ function draw() {
     }
     if (fittest) {
       stroke(Math.abs(tx - pleb.x), 255 * pleb.fitness * 100, 0);
+      fill(255);
       text(pleb.fitness, pleb.tx(), pleb.ty() - 10);
     }
     // stroke(Math.abs(tx - pleb.x), 255 * pleb.fitness * 100, 0);
