@@ -124,8 +124,11 @@ class Pleb {
     // console.log(this.genome);
     if (this.genome[frame] && this.grounded) {
       // console.log(this);
-      this.vx += Math.sin(this.genome[frame].vec);
-      this.vy += Math.cos(this.genome[frame].vec) * 4;
+      const approx = this.genome[frame].vec;
+      // const approx = this.genome[frame].vec * (1 + Math.random() * 0.1);
+      // const approx = this.genome[frame].vec + (Math.random() * 0.01 - 0.005);
+      this.vx += Math.sin(approx);
+      this.vy += Math.cos(approx) * 4;
     }
 
     // fric
@@ -181,7 +184,7 @@ class Pleb {
     /**
      * other -----------------------------------------------------------
      */
-    this.fitness = this.x > tx ? 0 : 1 / Math.abs(tx - this.x);
+    this.fitness += this.isAlive ? 1 / Math.abs(tx - this.x) : 0;
   }
 }
 
