@@ -62,7 +62,6 @@ function mouseDragged() {
 }
 function mouseReleased() {
   targetClick = false;
-  console.log("target " + tx);
 }
 
 /**
@@ -82,6 +81,7 @@ function reset() {
 
   // tx = 300;
   // ty = 300;
+  // console.log(tx);
 
   hVecs = [];
   // x = 0;
@@ -190,7 +190,7 @@ function setup() {
 function doEvents() {
   if (!targetClick)
     tx = 6 * parseInt(document.querySelector("#target-indicator").value);
-  MUT_RATE = parseInt(document.querySelector("#mutation-rate").value);
+  MUT_RATE = parseFloat(document.querySelector("#mutation-rate").value);
 }
 
 /**
@@ -227,7 +227,7 @@ function draw() {
 
   strokeWeight(1);
 
-  // avg
+  // average
   stroke(255, 25500 * (1 / Math.abs(tx - avg)), 0);
   line(avg, 0, avg, HEIGHT);
   fill(255, 25500 * (1 / Math.abs(tx - avg)), 0);
@@ -253,11 +253,19 @@ function draw() {
 
   // draw plebs
   for (pleb of plebs) {
-    if (!pleb.isAlive) continue;
+    // if (!pleb.isAlive) continue;
 
     // draw pleb
     stroke(255);
-    if (pleb.genome[frame] && pleb.genome[frame].isMutant) stroke(255, 0, 0);
+    if (!pleb.isAlive)
+      stroke(255, 0, 0);
+    if (pleb.genome[frame] && pleb.genome[frame].isMutant){
+      // text("!", pleb.x, pleb.y - 20);
+      stroke(255, 0, 255);
+      // point(pleb.x, pleb.y - 20);
+    } 
+    
+    // if (pleb.genome[frame] && pleb.genome[frame].isMutant) stroke(255, 0, 0);
     line(pleb.x, pleb.y, pleb.tx(), pleb.ty());
 
     // pleb info

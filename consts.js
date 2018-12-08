@@ -1,5 +1,5 @@
 const GRAV = 0.5;
-const WIDTH = 1000;
+const WIDTH = 600;
 const HEIGHT = 800;
 const TIME = 300;
 let MUT_RATE = 0.01;

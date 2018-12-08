@@ -23,7 +23,6 @@ class Pleb {
       for (let i = 0; i < TIME; i++) {
         this.genome.push(new Gene(Math.random() * 2 * Math.PI));
       }
-      // console.log(this.genome);
     } else {
       /**
        * inherit
@@ -38,7 +37,6 @@ class Pleb {
       this.genome = [];
       for (let i = 0; i < p.genome.length; i++)
         this.genome[i] = p.genome[i].copy();
-      // console.log(this.genome);
 
       /**
        * mutate
@@ -57,7 +55,6 @@ class Pleb {
         }
       });
     }
-    // console.log(this.genome);
   }
 
   tx() {
@@ -119,9 +116,7 @@ class Pleb {
     }
 
     // do vecs
-    // console.log(this.genome);
     if (this.genome[frame] && this.grounded) {
-      // console.log(this);
       const approx = this.genome[frame].vec;
       // const approx = this.genome[frame].vec * (1 + Math.random() * 0.1);
       // const approx = this.genome[frame].vec + (Math.random() * 0.01 - 0.005);
