@@ -55,8 +55,8 @@ function reset() {
   }
   ground = new Ground(gVecs);
 
-  tx = 300;
-  ty = 300;
+  // tx = 300;
+  // ty = 300;
 
   hVecs = [];
   // x = 0;
@@ -172,11 +172,17 @@ function setup() {
   running = true;
 }
 
+function doEvents() {
+  tx = 6 * document.querySelector("#target-indicator").value;
+}
+
 /**
  * DRAW -----------------------------------------------------------
  */
 function draw() {
   run(1);
+
+  doEvents();
 
   /**
    * draw -----------------------------------------------------------
@@ -203,10 +209,10 @@ function draw() {
 
   // avg
   stroke(255, 25500 * (1 / Math.abs(tx - avg)), 0);
-  // line(avg, 0, avg, HEIGHT);
+  line(avg, 0, avg, HEIGHT);
   fill(255, 25500 * (1 / Math.abs(tx - avg)), 0);
   noStroke();
-  // text("Average", avg + 8, 20);
+  text("Average", avg + 8, ground.getY(avg) - 40);
   stroke(255, 25500 * (1 / Math.abs(tx - best)), 0);
   // line(best, 0, best, HEIGHT);
   fill(255, 25500 * (1 / Math.abs(tx - best)), 0);

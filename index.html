@@ -18,6 +18,14 @@
     <button id="run-100f" onClick="run(100)">>></button>
     <button id="run-gen" onClick="run(TIME)">>|</button>
     <button id="reset" onClick="reset()">Reset</button>
+    <input
+      type="range"
+      min="1"
+      max="100"
+      value="50"
+      class="slider"
+      id="target-indicator"
+    />
     <style>
       * {
         box-sizing: border-box;
@@ -70,6 +78,11 @@
       #reset {
         margin-left: 10px;
         margin-top: 120px;
+        position: absolute;
+      }
+      #target-indicator {
+        margin-left: 10px;
+        margin-top: 160px;
         position: absolute;
       }
     </style>
