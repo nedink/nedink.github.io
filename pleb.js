@@ -1,7 +1,6 @@
 class Pleb {
-  constructor(x, y, p1, p2) {
-    this.p1 = p1;
-    this.p2 = p2;
+  constructor(x, y, p) {
+    this.p = p;
     this.x = this.px = x;
     this.y = this.py = y;
     this.vx = this.pvx = 0;
@@ -17,7 +16,7 @@ class Pleb {
     this.fitness = 0;
 
     // from parents
-    if (!(p1 && p2)) {
+    if (!p) {
       this.stop = Math.random() * WIDTH;
       this.jumpFreq = Math.pow(Math.random(), 10);
       this.genome = [];
@@ -30,16 +29,15 @@ class Pleb {
        * inherit
        */
       // stop
-      this.stop = p1.stop;
-      if (Math.random() < 0.5) this.stop = p1.stop;
+      this.stop = p.stop;
+      if (Math.random() < 0.5) this.stop = p.stop;
       // jump freq
-      this.jumpFreq = p1.jumpFreq;
-      if (Math.random() < 0.5) this.jumpFreq = p1.jumpFreq;
+      this.jumpFreq = p.jumpFreq;
+      if (Math.random() < 0.5) this.jumpFreq = p.jumpFreq;
       // vecs
       this.genome = [];
-      for (let i = 0; i < p1.genome.length; i++)
-        this.genome[i] =
-          Math.random() < 0.5 ? p1.genome[i].copy() : p2.genome[i].copy();
+      for (let i = 0; i < p.genome.length; i++)
+        this.genome[i] = p.genome[i].copy();
       // console.log(this.genome);
 
       /**
@@ -49,7 +47,7 @@ class Pleb {
       this.stop += Math.random() < 0.5 ? r : -r;
 
       r = Math.pow(Math.random(), 10) * 100;
-      this.jumpFreq = p1.jumpFreq;
+      this.jumpFreq = p.jumpFreq;
 
       // genome
       this.genome.forEach((g, i) => {

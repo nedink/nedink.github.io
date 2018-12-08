@@ -26,6 +26,19 @@
       class="slider"
       id="target-indicator"
     />
+    <div
+      style="color: white; position: absolute; margin-top: 180px; width: 100%; margin-left: 8; font-family: Arial, Helvetica, sans-serif;"
+    >
+      <span>Mutation rate: </span>
+      <input
+        type="number"
+        name="mutation-rate"
+        id="mutation-rate"
+        step="0.01"
+        value="0.1"
+        style="display: inline;"
+      />
+    </div>
     <style>
       * {
         box-sizing: border-box;
@@ -83,6 +96,12 @@
       #target-indicator {
         margin-left: 10px;
         margin-top: 160px;
+        position: absolute;
+        cursor: col-resize;
+      }
+      #mutation-rate {
+        margin-left: 10px;
+        width: 3rem;
         position: absolute;
       }
     </style>

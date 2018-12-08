@@ -9,6 +9,9 @@ function pause() {
   else document.querySelector("#pause").innerHTML = `>`;
 }
 
+let targetHover = false;
+let targetClick = false;
+
 // timer
 let timer = 0;
 let frame = 0;
@@ -39,6 +42,28 @@ let avg = 0;
 let best = 0;
 
 let outcomes = [];
+
+function mouseMoved() {
+  if (Math.abs(tx - mouseX) < 32) {
+    document.getElementsByTagName("body")[0].style.cursor = "-webkit-grab";
+  } else document.getElementsByTagName("body")[0].style.cursor = "default";
+}
+function mousePressed() {
+  if (Math.abs(tx - mouseX) < 32) {
+    targetClick = true;
+  }
+}
+function mouseDragged() {
+  if (targetClick) {
+    document.getElementById("target-indicator").value = mouseX / 6;
+    document.getElementsByTagName("body")[0].style.cursor = "-webkit-grabbing";
+    tx = 6 * document.getElementById("target-indicator").value;
+  }
+}
+function mouseReleased() {
+  targetClick = false;
+  console.log("target " + tx);
+}
 
 /**
  * initial state
@@ -125,27 +150,17 @@ function run(iterations) {
       while (newPlebs.length < PLEB_COUNT) {
         plebs.sort((a, b) => a.r - b.r);
 
-        let p1, p2;
-        const r1 = Math.random(),
-          r2 = Math.random();
+        let p;
+        const r = Math.random();
 
         for (const pleb of plebs) {
-          if (r1 < pleb.r) {
-            p1 = pleb;
-            break;
-          }
-        }
-        for (const pleb of plebs) {
-          if (r2 < pleb.r) {
-            p2 =
-              pleb !== p1
-                ? pleb
-                : plebs[(plebs.indexOf(pleb) + 1) % plebs.length];
+          if (r < pleb.r) {
+            p = pleb;
             break;
           }
         }
 
-        newPleb = new Pleb(10 + Math.random() * 20, HEIGHT, p1, p2);
+        newPleb = new Pleb(10 + Math.random() * 20, HEIGHT, p);
 
         newPlebs.push(newPleb);
       }
@@ -173,7 +188,9 @@ function setup() {
 }
 
 function doEvents() {
-  tx = 6 * document.querySelector("#target-indicator").value;
+  if (!targetClick)
+    tx = 6 * parseInt(document.querySelector("#target-indicator").value);
+  MUT_RATE = parseInt(document.querySelector("#mutation-rate").value);
 }
 
 /**
@@ -203,9 +220,12 @@ function draw() {
 
   // target
   stroke(0, 180, 0);
+  strokeWeight(Math.abs(mouseX - tx) < 32 ? 2 : 1);
   line(tx, 0, tx, ty);
   line(tx, ty, tx - 10, ty - 10);
   line(tx, ty, tx + 10, ty - 10);
+
+  strokeWeight(1);
 
   // avg
   stroke(255, 25500 * (1 / Math.abs(tx - avg)), 0);
