@@ -1,297 +1,146 @@
-/**
- * pause
- */
-function pause() {
-  running = !running;
-  if (!running) noLoop();
-  else loop();
-  if (running) document.querySelector("#pause").innerHTML = `||`;
-  else document.querySelector("#pause").innerHTML = `>`;
+const BOIDS = 100;
+
+const boids = [];
+
+let paused = false;
+
+function drawBoid(boid) {
+  stroke(255);
+  strokeWeight(8);
+  point(boid.position.x, boid.position.y);
 }
 
-let targetHover = false;
-let targetClick = false;
-
-// timer
-let timer = 0;
-let frame = 0;
-
-let gVecs = [];
-let x = 0,
-  y = 400 + Math.random() * 20;
-for (i = 0; i < 6; i++) {
-  gVecs.push(new Vec(x, y, (x += 100), (y = 400 + Math.random() * 20)));
-}
-let ground = new Ground(gVecs);
-
-let tx = 300;
-let ty = 300;
-
-let hVecs = [];
-let hazard = new Hazard(hVecs);
-
-let plebs = [];
-for (i = 0; i < PLEB_COUNT; i++) {
-  plebs.push(new Pleb(10 + Math.random() * 20, HEIGHT));
-}
-
-let iteration = 1;
-
-let prvAvg = 0;
-let avg = 0;
-let best = 0;
-
-let outcomes = [];
-
-function mouseMoved() {
-  if (Math.abs(tx - mouseX) < 32) {
-    document.getElementsByTagName("body")[0].style.cursor = "-webkit-grab";
-  } else document.getElementsByTagName("body")[0].style.cursor = "default";
-}
-function mousePressed() {
-  if (Math.abs(tx - mouseX) < 32) {
-    targetClick = true;
-  }
-}
-function mouseDragged() {
-  if (targetClick) {
-    document.getElementById("target-indicator").value = mouseX / 6;
-    document.getElementsByTagName("body")[0].style.cursor = "-webkit-grabbing";
-    tx = 6 * document.getElementById("target-indicator").value;
-  }
-}
-function mouseReleased() {
-  targetClick = false;
-}
-
-/**
- * initial state
- */
-function reset() {
-  // timer
-  timer = 0;
-  frame = 0;
-
-  gVecs = [];
-  (x = 0), (y = 400 + Math.random() * 20);
-  for (i = 0; i < 6; i++) {
-    gVecs.push(new Vec(x, y, (x += 100), (y = 400 + Math.random() * 20)));
-  }
-  ground = new Ground(gVecs);
-
-  // tx = 300;
-  // ty = 300;
-  // console.log(tx);
-
-  hVecs = [];
-  // x = 0;
-  // y = 400 + Math.random() * 20;
-  // for (i = 0; i < 8; i++) {
-  //   hVecs.push(new Vec(x, y, x += 100, y = 400 + Math.random() * 20));
-  // }
-  hazard = new Hazard(hVecs);
-
-  plebs = [];
-  for (i = 0; i < PLEB_COUNT; i++) {
-    plebs.push(new Pleb(10 + Math.random() * 20, HEIGHT));
-  }
-
-  iteration = 1;
-
-  prvAvg = 0;
-  avg = 0;
-  best = 0;
-
-  outcomes = [];
-}
-
-/**
- * runs for a number of iterations
- * @param {Number} iterations
- */
-
-function run(iterations) {
-  for (let i = 0; i < iterations; i++) {
-    // pause
-    // if (!running) return;
-
-    // time
-    frame++;
-
-    // exit
-    if (frame > 10) window.stop();
-
-    if (frame >= TIME) {
-      timer = 0;
-      frame = 0;
-
-      // record outcomes
-      for (const pleb of plebs) {
-        outcomes.push(pleb.x);
-      }
-      // get updated avg
-      const sum = plebs.map(pleb => pleb.x).reduce((acc, cur) => acc + cur);
-      prvAvg = avg;
-      avg = sum / plebs.length;
-      // get updated best
-      best = plebs.sort((a, b) => a.fitness > b.fitness)[0];
-
-      /**
-       * do next gen -----------------------------------------------------------
-       */
-
-      plebs.sort((a, b) => b.fitness - a.fitness);
-
-      plebs.forEach((pleb, i) => {
-        pleb.r = Math.pow(0.8, i);
-      });
-
-      newPlebs = [];
-      while (newPlebs.length < PLEB_COUNT) {
-        plebs.sort((a, b) => a.r - b.r);
-
-        let p;
-        const r = Math.random();
-
-        for (const pleb of plebs) {
-          if (r < pleb.r) {
-            p = pleb;
-            break;
-          }
-        }
-
-        newPleb = new Pleb(10 + Math.random() * 20, HEIGHT, p);
-
-        newPlebs.push(newPleb);
-      }
-
-      plebs = newPlebs.slice();
-      iteration++;
-    }
-
-    // update plebs
-    for (pleb of plebs) {
-      pleb.step();
-    }
-  }
-}
-
-/**
- * SETUP -----------------------------------------------------------
- */
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  background(0);
-
-  reset();
-  running = true;
-}
-
-function doEvents() {
-  if (!targetClick)
-    tx = 6 * parseInt(document.querySelector("#target-indicator").value);
-  MUT_RATE = parseFloat(document.querySelector("#mutation-rate").value);
-}
-
-/**
- * DRAW -----------------------------------------------------------
- */
-function draw() {
-  run(1);
-
-  doEvents();
-
-  /**
-   * draw -----------------------------------------------------------
-   */
-  background(0);
-
-  // draw info
-  fill(255);
-  noStroke();
-  // iteration
-  text("Iteration: " + iteration, 10, 20);
-  // time
-  text("Time left (sec): " + (TIME - frame) / 100, 10, 40);
-  // FPS
-  // text("FPS: " + Math.floor(frameCount), 10, 60);
-  // frame
-  text("Frame: " + frame, 10, 60);
-
-  // target
-  stroke(0, 180, 0);
-  strokeWeight(Math.abs(mouseX - tx) < 32 ? 2 : 1);
-  line(tx, 0, tx, ty);
-  line(tx, ty, tx - 10, ty - 10);
-  line(tx, ty, tx + 10, ty - 10);
-
+function drawBoidFov(boid) {
+  stroke(255, 127);
   strokeWeight(1);
+  noFill();
+  ellipse(boid.position.x, boid.position.y, BOID_RADIUS * 2, BOID_RADIUS * 2);
+}
 
-  // average
-  stroke(255, 25500 * (1 / Math.abs(tx - avg)), 0);
-  line(avg, 0, avg, HEIGHT);
-  fill(255, 25500 * (1 / Math.abs(tx - avg)), 0);
-  noStroke();
-  text("Average", avg + 8, ground.getY(avg) - 40);
-  stroke(255, 25500 * (1 / Math.abs(tx - best)), 0);
-  // line(best, 0, best, HEIGHT);
-  fill(255, 25500 * (1 / Math.abs(tx - best)), 0);
-  noStroke();
-  // text("Best", best + 8, HEIGHT);
+function drawBoidVector(boid) {
+  stroke(255);
+  strokeWeight(1);
+  noFill();
+  const boidPlusSpeed = p5.Vector.add(
+    boid.position,
+    p5.Vector.mult(boid.heading, boid.speed).mult(12)
+  );
+  line(boid.position.x, boid.position.y, boidPlusSpeed.x, boidPlusSpeed.y);
+}
 
-  // draw ground
-  for (vec of ground.vecs) {
+function drawAvgPos(boid) {
+  stroke(0, 255, 0);
+  strokeWeight(1);
+  if (boid.avgPosition.x && boid.avgPosition.y)
+    line(
+      boid.position.x,
+      boid.position.y,
+      boid.avgPosition.x,
+      boid.avgPosition.y
+    );
+}
+
+function drawAvoidVector(boid) {
+  stroke(255, 0, 0, 200);
+  strokeWeight(1);
+  if (boid.avgPosition.x && boid.avgPosition.y)
+    line(
+      boid.position.x,
+      boid.position.y,
+      p5.Vector.add(boid.position, boid.avoidVectorNorm).x,
+      p5.Vector.add(boid.position, boid.avoidVectorNorm).y
+    );
+}
+
+function drawHalo(boid, radius, color, weight, fillColor) {
+  stroke(color);
+  strokeWeight(weight);
+  fill(fillColor);
+  ellipse(boid.position.x, boid.position.y, radius * 2, radius * 2);
+}
+
+function setup() {
+  createCanvas(innerWidth, innerHeight);
+
+  for (let i = 0; i < BOIDS; i++) {
+    boids.push(
+      new Boid(
+        width / 4 + random(width - width / 2),
+        height / 4 + random(height - height / 2),
+        random(PI * 2),
+        2
+      )
+    );
+  }
+
+  for (boid of boids) {
+    boid.step();
+  }
+
+  // const c = color("rgba(255,0,0,200)");
+  // console.log(c);
+  // stroke(c);
+  // stroke(color('#ff0000'))
+  // ellipse()
+
+  // frameRate(10);
+}
+
+function draw() {
+  if (paused) return;
+
+  background(0);
+
+  // draw boids
+  for (boid of boids) {
+    // drawBoidFov(boid);
+
+    drawHalo(
+      boid,
+      boid.cohesionRadius,
+      color("#ff000080"),
+      1,
+      color("#ff000080")
+    );
+
+    drawHalo(
+      boid,
+      boid.separationRadius,
+      color("#ff006640"),
+      1,
+      color("#ff006640")
+    );
+
+    drawHalo(
+      boid,
+      boid.alignmentRadius,
+      color("#ff00ff20"),
+      1,
+      color("#ff00ff20")
+    );
+
+    // drawBoidVector(boid);
+    // drawAvoidVector(boid);
+    // drawAvgPos(boid);
+
+    strokeWeight(1);
     stroke(255);
-    line(vec.sx, vec.sy, vec.ex, vec.ey);
-  }
-
-  // draw hazard
-  for (vec of hazard.vecs) {
-    stroke(255, 0, 0);
-    line(vec.sx, vec.sy, vec.ex, vec.ey);
-  }
-
-  // draw plebs
-  for (pleb of plebs) {
-    // if (!pleb.isAlive) continue;
-
-    // draw pleb
-    stroke(255);
-    if (!pleb.isAlive)
-      stroke(255, 0, 0);
-    if (pleb.genome[frame] && pleb.genome[frame].isMutant){
-      // text("!", pleb.x, pleb.y - 20);
-      stroke(255, 0, 255);
-      // point(pleb.x, pleb.y - 20);
-    } 
-    
-    // if (pleb.genome[frame] && pleb.genome[frame].isMutant) stroke(255, 0, 0);
-    line(pleb.x, pleb.y, pleb.tx(), pleb.ty());
-
-    // pleb info
-
-    // text(Math.floor(100 * pleb.vx) / 100, pleb.tx(), pleb.ty() - 10);
-    // text(Math.floor(pleb.fitness) / 100, pleb.tx(), pleb.ty() - 10);
-
-    let fittest = true;
-    for (p of plebs) {
-      if (pleb === p) continue;
-      if (p.fitness > pleb.fitness) {
-        fittest = false;
-      }
+    for (n of boid.alignmentNeighbors) {
+      if (
+        dist(boid.position.x, boid.position.y, n.position.x, n.position.y) <
+        max(max(SEPARATION_RADIUS, ALIGNMENT_RADIUS), SEPARATION_RADIUS)
+      )
+        line(boid.position.x, boid.position.y, n.position.x, n.position.y);
     }
-    if (fittest) {
-      stroke(Math.abs(tx - pleb.x), 255 * pleb.fitness * 100, 0);
-      fill(255);
-      text(pleb.fitness, pleb.tx(), pleb.ty() - 10);
-    }
-    // stroke(Math.abs(tx - pleb.x), 255 * pleb.fitness * 100, 0);
-    // text(Math.floor(10000 * pleb.fitness) / 10000, pleb.tx(), pleb.ty() - 10);
 
-    // draw target
-    // if (pleb.target) {
-    //   stroke(255, 0, 0)
-    //   line(pleb.x, pleb.y - 10, pleb.target.tx(), pleb.target.ty());
-    // }
+    drawBoid(boid);
   }
+
+  for (boid of boids) {
+    boid.step();
+  }
+}
+
+function mousePressed() {
+  paused = !paused;
 }

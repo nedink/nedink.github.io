@@ -1,110 +1,14 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <!--
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
-    -->
-    <script src="p5.min.js"></script>
-    <script src="consts.js"></script>
-    <script src="geom.js"></script>
-    <script src="ground.js"></script>
-    <script src="hazard.js"></script>
-    <script src="gene.js"></script>
-    <script src="pleb.js"></script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>flocking</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
+    <script src="boid.js"></script>
     <script src="sketch.js"></script>
   </head>
-
-  <body>
-    <button id="pause" onClick="pause()">||</button>
-    <button id="run-100f" onClick="run(100)">>></button>
-    <button id="run-gen" onClick="run(TIME)">>|</button>
-    <button id="reset" onClick="reset()">Reset</button>
-    <input
-      type="range"
-      min="1"
-      max="100"
-      value="50"
-      class="slider"
-      id="target-indicator"
-    />
-    <div
-      style="color: magenta; position: absolute; margin-top: 180px; width: 100%; margin-left: 8; font-family: Arial, Helvetica, sans-serif;"
-    >
-      <span>Mutation rate: </span>
-      <input
-        type="number"
-        name="mutation-rate"
-        id="mutation-rate"
-        step="0.01"
-        value="0.01"
-        style="display: inline;"
-      />
-    </div>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-      }
-      canvas {
-        position: fixed;
-        left: 0;
-        z-index: -1;
-      }
-      button {
-        outline: none;
-        border: none;
-        background-color: rgb(50, 50, 50);
-        color: white;
-        padding: 0.5rem;
-        cursor: pointer;
-        border-radius: 2px;
-        font-size: 1rem;
-        font-weight: 100;
-        height: 2rem;
-        padding: 0 1rem;
-        display: flex;
-        justify-content: center;
-      }
-      button:hover {
-        background-color: rgb(72, 72, 72);
-      }
-
-      #pause {
-        margin-left: 10px;
-        margin-top: 80px;
-        position: absolute;
-        width: 2rem;
-      }
-      #run-100f {
-        margin-left: 50px;
-        margin-top: 80px;
-        position: absolute;
-        width: 2rem;
-      }
-      #run-gen {
-        margin-left: 90px;
-        margin-top: 80px;
-        position: absolute;
-        width: 2rem;
-      }
-      #reset {
-        margin-left: 10px;
-        margin-top: 120px;
-        position: absolute;
-        width: 7rem;
-      }
-      #target-indicator {
-        margin-left: 10px;
-        margin-top: 160px;
-        position: absolute;
-        cursor: col-resize;
-      }
-      #mutation-rate {
-        margin-left: 10px;
-        width: 3rem;
-        position: absolute;
-      }
-    </style>
-  </body>
+  <body style="margin: 0"></body>
 </html>
