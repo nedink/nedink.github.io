@@ -1,0 +1,12 @@
+:root {
+  --desert-color: rgb(255, 238, 160);
+  --wood-color: rgb(44, 94, 69);
+  --sheep-color: rgb(125, 214, 73);
+  --wheat-color: rgb(255, 238, 0);
+  --brick-color: rgb(185, 105, 68);
+  --ore-color: rgb(111, 114, 134);
+  --player1-color: rgb(224, 26, 26);
+  --player2-color: rgb(247, 151, 8);
+  --player3-color: rgb(255, 255, 255);
+  --player4-color: rgb(31, 84, 255);
+}
