@@ -1,146 +1,67 @@
-const BOIDS = 100;
 
-const boids = [];
+let zoom = 10;
 
-let paused = false;
+board.hexes.forEach(hex => {
+  resources.sort(() => Math.random() - 0.5);
+  hex.resource = resources.pop();
 
-function drawBoid(boid) {
-  stroke(255);
-  strokeWeight(8);
-  point(boid.position.x, boid.position.y);
-}
+  if (hex.resource === "desert") return;
+  rolls.sort(() => Math.random() - 0.5);
+  hex.roll = rolls.pop();
+});
 
-function drawBoidFov(boid) {
-  stroke(255, 127);
-  strokeWeight(1);
-  noFill();
-  ellipse(boid.position.x, boid.position.y, BOID_RADIUS * 2, BOID_RADIUS * 2);
-}
 
-function drawBoidVector(boid) {
-  stroke(255);
-  strokeWeight(1);
-  noFill();
-  const boidPlusSpeed = p5.Vector.add(
-    boid.position,
-    p5.Vector.mult(boid.heading, boid.speed).mult(12)
-  );
-  line(boid.position.x, boid.position.y, boidPlusSpeed.x, boidPlusSpeed.y);
-}
 
-function drawAvgPos(boid) {
-  stroke(0, 255, 0);
-  strokeWeight(1);
-  if (boid.avgPosition.x && boid.avgPosition.y)
-    line(
-      boid.position.x,
-      boid.position.y,
-      boid.avgPosition.x,
-      boid.avgPosition.y
-    );
-}
-
-function drawAvoidVector(boid) {
-  stroke(255, 0, 0, 200);
-  strokeWeight(1);
-  if (boid.avgPosition.x && boid.avgPosition.y)
-    line(
-      boid.position.x,
-      boid.position.y,
-      p5.Vector.add(boid.position, boid.avoidVectorNorm).x,
-      p5.Vector.add(boid.position, boid.avoidVectorNorm).y
-    );
-}
-
-function drawHalo(boid, radius, color, weight, fillColor) {
-  stroke(color);
-  strokeWeight(weight);
-  fill(fillColor);
-  ellipse(boid.position.x, boid.position.y, radius * 2, radius * 2);
-}
+// ---------------------------
 
 function setup() {
+  colors.desert = color(255, 238, 160);
+  colors.wood = color(44, 94, 69);
+  colors.brick = color(185, 105, 68);
+  colors.wheat = color(255, 238, 0);
+  colors.sheep = color(125, 214, 73);
+  colors.ore = color(111, 114, 134);
+  colors.player1 = color(224, 26, 26);
+  colors.player2 = color(247, 151, 8);
+  colors.player3 = color(255, 255, 255);
+  colors.player4 = color(31, 84, 255);
+  
   createCanvas(innerWidth, innerHeight);
-
-  for (let i = 0; i < BOIDS; i++) {
-    boids.push(
-      new Boid(
-        width / 4 + random(width - width / 2),
-        height / 4 + random(height - height / 2),
-        random(PI * 2),
-        2
-      )
-    );
-  }
-
-  for (boid of boids) {
-    boid.step();
-  }
-
-  // const c = color("rgba(255,0,0,200)");
-  // console.log(c);
-  // stroke(c);
-  // stroke(color('#ff0000'))
-  // ellipse()
-
-  // frameRate(10);
-}
-
-function draw() {
-  if (paused) return;
-
   background(0);
 
-  // draw boids
-  for (boid of boids) {
-    // drawBoidFov(boid);
+  translate(width / 2, height / 2);
+  scale(zoom);
 
-    drawHalo(
-      boid,
-      boid.cohesionRadius,
-      color("#ff000080"),
-      1,
-      color("#ff000080")
-    );
+  board.hexes.forEach(hex => {
+    const c = colors[hex.resource];
+    fill(c);
+    strokeWeight(0.1);
+    beginShape();
+    vertex(hex.x, hex.y - 7);
+    vertex(hex.x + 6, hex.y - 3);
+    vertex(hex.x + 6, hex.y + 3);
+    vertex(hex.x, hex.y + 7);
+    vertex(hex.x - 6, hex.y + 3);
+    vertex(hex.x - 6, hex.y - 3);
+    endShape(CLOSE);
+    fill(brightness(colors[hex.resource]) > 80 ? 0 : 255);
+    textAlign(CENTER, CENTER);
+    textSize(4);
+    text(hex.roll, hex.x, hex.y);
+  });
+};
 
-    drawHalo(
-      boid,
-      boid.separationRadius,
-      color("#ff006640"),
-      1,
-      color("#ff006640")
-    );
+function draw() {};
 
-    drawHalo(
-      boid,
-      boid.alignmentRadius,
-      color("#ff00ff20"),
-      1,
-      color("#ff00ff20")
-    );
 
-    // drawBoidVector(boid);
-    // drawAvoidVector(boid);
-    // drawAvgPos(boid);
 
-    strokeWeight(1);
-    stroke(255);
-    for (n of boid.alignmentNeighbors) {
-      if (
-        dist(boid.position.x, boid.position.y, n.position.x, n.position.y) <
-        max(max(SEPARATION_RADIUS, ALIGNMENT_RADIUS), SEPARATION_RADIUS)
-      )
-        line(boid.position.x, boid.position.y, n.position.x, n.position.y);
-    }
+// ---------------------------
 
-    drawBoid(boid);
+function keyPressed() {
+  console.log(keyCode === 32)
+  switch(keyCode) {
+    case 32: // space 
+      console.log()
+      break;
   }
-
-  for (boid of boids) {
-    boid.step();
-  }
-}
-
-function mousePressed() {
-  paused = !paused;
 }
